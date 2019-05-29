@@ -15,10 +15,10 @@ contract TokenNetworkRegistry is Utils {
     uint256 public chain_id;
     uint256 public settlement_timeout_min;
     uint256 public settlement_timeout_max;
+    uint256 public max_token_networks;
 
-    // Only for the limited Red Eyes release
     address public deprecation_executor;
-    bool public token_network_created = false;
+    uint256 public token_network_created = 0;
 
     // Token address => TokenNetwork address
     mapping(address => address) public token_to_token_networks;
@@ -26,7 +26,7 @@ contract TokenNetworkRegistry is Utils {
     event TokenNetworkCreated(address indexed token_address, address indexed token_network_address);
 
     modifier canCreateTokenNetwork() {
-        require(token_network_created == false);
+        require(token_network_created < max_token_networks);
         _;
     }
 
@@ -34,7 +34,8 @@ contract TokenNetworkRegistry is Utils {
         address _secret_registry_address,
         uint256 _chain_id,
         uint256 _settlement_timeout_min,
-        uint256 _settlement_timeout_max
+        uint256 _settlement_timeout_max,
+        uint256 _max_token_networks
     )
         public
     {
@@ -44,10 +45,13 @@ contract TokenNetworkRegistry is Utils {
         require(_settlement_timeout_max > _settlement_timeout_min);
         require(_secret_registry_address != address(0x0));
         require(contractExists(_secret_registry_address));
+        require(_max_token_networks > 0);
+
         secret_registry_address = _secret_registry_address;
         chain_id = _chain_id;
         settlement_timeout_min = _settlement_timeout_min;
         settlement_timeout_max = _settlement_timeout_max;
+        max_token_networks = _max_token_networks;
 
         deprecation_executor = msg.sender;
     }
@@ -75,7 +79,7 @@ contract TokenNetworkRegistry is Utils {
         require(_token_network_deposit_limit >= _channel_participant_deposit_limit);
 
         // We limit the number of token networks to 1 for the Bug Bounty release
-        token_network_created = true;
+        token_network_created = token_network_created + 1;
 
         TokenNetwork token_network;
 
