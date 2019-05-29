@@ -56,12 +56,23 @@ contract TokenNetworkRegistry is Utils {
     /// `_token_address`.
     /// @param _token_address Ethereum address of an already deployed token, to
     /// be used in the new TokenNetwork contract.
-    function createERC20TokenNetwork(address _token_address)
+    /// @param _channel_participant_deposit_limit The maximum amount of tokens that can be deposited by each
+    /// participant of each channel. MAX_SAFE_UINT256 means no limits.
+    /// @param _token_network_deposit_limit The maximum amount of tokens that the TokenNetwork contract can hold.
+    /// MAX_SAFE_UINT256 means no limits.
+    function createERC20TokenNetwork(
+        address _token_address,
+        uint256 _channel_participant_deposit_limit,
+        uint256 _token_network_deposit_limit
+    )
         canCreateTokenNetwork
         external
         returns (address token_network_address)
     {
         require(token_to_token_networks[_token_address] == address(0x0));
+        require(_channel_participant_deposit_limit > 0);
+        require(_token_network_deposit_limit > 0);
+        require(_token_network_deposit_limit >= _channel_participant_deposit_limit);
 
         // We limit the number of token networks to 1 for the Bug Bounty release
         token_network_created = true;
@@ -75,7 +86,9 @@ contract TokenNetworkRegistry is Utils {
             chain_id,
             settlement_timeout_min,
             settlement_timeout_max,
-            deprecation_executor
+            deprecation_executor,
+            _channel_participant_deposit_limit,
+            _token_network_deposit_limit
         );
 
         token_network_address = address(token_network);
