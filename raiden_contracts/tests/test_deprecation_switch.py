@@ -7,6 +7,9 @@ from raiden_contracts.constants import (
     EVENT_TOKEN_NETWORK_CREATED,
     TEST_SETTLE_TIMEOUT_MIN,
     TEST_SETTLE_TIMEOUT_MAX,
+    TEST_MAX_TOKENS,
+    MAX_ETH_CHANNEL_PARTICIPANT,
+    MAX_ETH_TOKEN_NETWORK,
 )
 from raiden_contracts.utils.utils import get_pending_transfers_tree
 from raiden_contracts.tests.utils import ChannelValues
@@ -34,32 +37,39 @@ def test_deprecation_executor(
             int(web3.version.network),
             TEST_SETTLE_TIMEOUT_MIN,
             TEST_SETTLE_TIMEOUT_MAX,
+            TEST_MAX_TOKENS,
         ],
     )
 
     # Make sure deployer is deprecation_executor
     assert token_network_registry.functions.deprecation_executor().call() == deprecation_executor
-    assert token_network_registry.functions.token_network_created().call() is False
+    assert token_network_registry.functions.token_network_created().call() == 0
 
     # We can only deploy one TokenNetwork contract
     # It can be deployed by anyone
     tx_hash = token_network_registry.functions.createERC20TokenNetwork(
         custom_token.address,
+        MAX_ETH_CHANNEL_PARTICIPANT,
+        MAX_ETH_TOKEN_NETWORK,
     ).transact(
         {'from': B},
     )
-    assert token_network_registry.functions.token_network_created().call() is True
+    assert token_network_registry.functions.token_network_created().call() == 1
 
     # No other TokenNetworks can be deployed now
     with pytest.raises(TransactionFailed):
         token_network_registry.functions.createERC20TokenNetwork(
             custom_token.address,
+            MAX_ETH_CHANNEL_PARTICIPANT,
+            MAX_ETH_TOKEN_NETWORK,
         ).transact(
             {'from': B},
         )
     with pytest.raises(TransactionFailed):
         token_network_registry.functions.createERC20TokenNetwork(
             custom_token.address,
+            MAX_ETH_CHANNEL_PARTICIPANT,
+            MAX_ETH_TOKEN_NETWORK,
         ).transact(
             {'from': deprecation_executor},
         )

@@ -10,6 +10,8 @@ from raiden_contracts.constants import (
     CONTRACTS_VERSION,
     TEST_SETTLE_TIMEOUT_MIN,
     TEST_SETTLE_TIMEOUT_MAX,
+    MAX_ETH_CHANNEL_PARTICIPANT,
+    MAX_ETH_TOKEN_NETWORK,
 )
 
 
@@ -165,6 +167,8 @@ def test_constructor_call(
             TEST_SETTLE_TIMEOUT_MIN,
             TEST_SETTLE_TIMEOUT_MAX,
             deprecation_executor,
+            MAX_ETH_CHANNEL_PARTICIPANT,
+            MAX_ETH_TOKEN_NETWORK
         ])
     with pytest.raises(TransactionFailed):
         get_token_network([
@@ -174,6 +178,8 @@ def test_constructor_call(
             TEST_SETTLE_TIMEOUT_MIN,
             TEST_SETTLE_TIMEOUT_MAX,
             deprecation_executor,
+            MAX_ETH_CHANNEL_PARTICIPANT,
+            MAX_ETH_TOKEN_NETWORK,
         ])
     with pytest.raises(TransactionFailed):
         get_token_network([
@@ -183,6 +189,8 @@ def test_constructor_call(
             TEST_SETTLE_TIMEOUT_MIN,
             TEST_SETTLE_TIMEOUT_MAX,
             deprecation_executor,
+            MAX_ETH_CHANNEL_PARTICIPANT,
+            MAX_ETH_TOKEN_NETWORK,
         ])
 
     with pytest.raises(TransactionFailed):
@@ -193,6 +201,8 @@ def test_constructor_call(
             TEST_SETTLE_TIMEOUT_MIN,
             TEST_SETTLE_TIMEOUT_MAX,
             deprecation_executor,
+            MAX_ETH_CHANNEL_PARTICIPANT,
+            MAX_ETH_TOKEN_NETWORK,
         ])
     with pytest.raises(TransactionFailed):
         get_token_network([
@@ -202,6 +212,8 @@ def test_constructor_call(
             TEST_SETTLE_TIMEOUT_MIN,
             TEST_SETTLE_TIMEOUT_MAX,
             deprecation_executor,
+            MAX_ETH_CHANNEL_PARTICIPANT,
+            MAX_ETH_TOKEN_NETWORK,
         ])
 
     with pytest.raises(TransactionFailed):
@@ -212,6 +224,8 @@ def test_constructor_call(
             TEST_SETTLE_TIMEOUT_MIN,
             TEST_SETTLE_TIMEOUT_MAX,
             deprecation_executor,
+            MAX_ETH_CHANNEL_PARTICIPANT,
+            MAX_ETH_TOKEN_NETWORK,
         ])
 
     with pytest.raises(TransactionFailed):
@@ -222,6 +236,8 @@ def test_constructor_call(
             TEST_SETTLE_TIMEOUT_MAX,
             TEST_SETTLE_TIMEOUT_MIN,
             deprecation_executor,
+            MAX_ETH_CHANNEL_PARTICIPANT,
+            MAX_ETH_TOKEN_NETWORK,
         ])
 
     with pytest.raises(TransactionFailed):
@@ -232,6 +248,8 @@ def test_constructor_call(
             0,
             TEST_SETTLE_TIMEOUT_MIN,
             deprecation_executor,
+            MAX_ETH_CHANNEL_PARTICIPANT,
+            MAX_ETH_TOKEN_NETWORK,
         ])
 
     with pytest.raises(TransactionFailed):
@@ -242,6 +260,8 @@ def test_constructor_call(
             TEST_SETTLE_TIMEOUT_MIN,
             0,
             deprecation_executor,
+            MAX_ETH_CHANNEL_PARTICIPANT,
+            MAX_ETH_TOKEN_NETWORK,
         ])
 
     get_token_network([
@@ -251,6 +271,8 @@ def test_constructor_call(
         TEST_SETTLE_TIMEOUT_MIN,
         TEST_SETTLE_TIMEOUT_MAX,
         deprecation_executor,
+        MAX_ETH_CHANNEL_PARTICIPANT,
+        MAX_ETH_TOKEN_NETWORK,
     ])
 
 

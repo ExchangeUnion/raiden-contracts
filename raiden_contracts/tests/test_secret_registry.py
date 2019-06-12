@@ -1,10 +1,10 @@
 import pytest
+from hashlib import sha256
 from web3 import Web3
 from web3.exceptions import ValidationError
 from raiden_contracts.constants import EVENT_SECRET_REVEALED, CONTRACTS_VERSION
 from raiden_contracts.utils.events import check_secret_revealed, check_secrets_revealed
 from raiden_contracts.tests.fixtures.config import fake_bytes
-
 
 def test_version(secret_registry_contract):
     version = secret_registry_contract.functions.contract_version().call()
@@ -47,7 +47,7 @@ def test_register_secret(secret_registry_contract, get_accounts, get_block):
     (A, B) = get_accounts(2)
     secret = b'secretsecretsecretsecretsecretse'
     secret2 = b'secretsecretsecretsecretsecretss'
-    secrethash = Web3.sha3(secret)
+    secrethash = sha256(secret).digest()
 
     assert secret_registry_contract.functions.getSecretRevealBlockHeight(secrethash).call() == 0
 
@@ -64,7 +64,7 @@ def test_register_secret(secret_registry_contract, get_accounts, get_block):
 def test_register_secret_batch(secret_registry_contract, get_accounts, get_block):
     (A,) = get_accounts(1)
     secrets = [fake_bytes(32, fill) for fill in ('02', '03', '04', '05')]
-    secret_hashes = [Web3.sha3(secret) for secret in secrets]
+    secret_hashes = [sha256(secret).digest() for secret in secrets]
 
     for hash in secret_hashes:
         assert secret_registry_contract.functions.getSecretRevealBlockHeight(hash).call() == 0
@@ -93,7 +93,7 @@ def test_register_secret_batch_return_value(secret_registry_contract, get_accoun
 
 def test_events(secret_registry_contract, event_handler):
     secret = b'secretsecretsecretsecretsecretse'
-    secrethash = Web3.sha3(secret)
+    secrethash = sha256(secret).digest()
     ev_handler = event_handler(secret_registry_contract)
 
     txn_hash = secret_registry_contract.functions.registerSecret(secret).transact()
@@ -104,7 +104,7 @@ def test_events(secret_registry_contract, event_handler):
 
 def test_register_secret_batch_events(secret_registry_contract, event_handler):
     secrets = [fake_bytes(32, '02'), fake_bytes(32, '03'), fake_bytes(32, '04')]
-    secret_hashes = [Web3.sha3(secret) for secret in secrets]
+    secret_hashes = [sha256(secret).digest() for secret in secrets]
 
     ev_handler = event_handler(secret_registry_contract)
 

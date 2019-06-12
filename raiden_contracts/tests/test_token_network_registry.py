@@ -5,6 +5,9 @@ from raiden_contracts.constants import (
     EVENT_TOKEN_NETWORK_CREATED,
     TEST_SETTLE_TIMEOUT_MIN,
     TEST_SETTLE_TIMEOUT_MAX,
+    TEST_MAX_TOKENS,
+    MAX_ETH_CHANNEL_PARTICIPANT,
+    MAX_ETH_TOKEN_NETWORK,
 )
 from .fixtures.config import (
     EMPTY_ADDRESS,
@@ -59,25 +62,26 @@ def test_constructor_call(
         get_token_network_registry([secret_registry_contract.address, chain_id, settle_min, -3])
 
     with pytest.raises(TransactionFailed):
-        get_token_network_registry([EMPTY_ADDRESS, chain_id, settle_min, settle_max])
+        get_token_network_registry([EMPTY_ADDRESS, chain_id, settle_min, settle_max, 1])
     with pytest.raises(TransactionFailed):
-        get_token_network_registry([A, chain_id, settle_min, settle_max])
+        get_token_network_registry([A, chain_id, settle_min, settle_max, 1])
 
     with pytest.raises(TransactionFailed):
-        get_token_network_registry([secret_registry_contract.address, 0, settle_min, settle_max])
+        get_token_network_registry([secret_registry_contract.address, 0, settle_min, settle_max, 1])
 
     with pytest.raises(TransactionFailed):
-        get_token_network_registry([secret_registry_contract.address, 0, 0, settle_max])
+        get_token_network_registry([secret_registry_contract.address, 0, 0, settle_max, 1])
     with pytest.raises(TransactionFailed):
-        get_token_network_registry([secret_registry_contract.address, 0, settle_min, 0])
+        get_token_network_registry([secret_registry_contract.address, 0, settle_min, 0, 1])
     with pytest.raises(TransactionFailed):
-        get_token_network_registry([secret_registry_contract.address, 0, settle_max, settle_min])
+        get_token_network_registry([secret_registry_contract.address, 0, settle_max, settle_min, 1])
 
     get_token_network_registry([
         secret_registry_contract.address,
         chain_id,
         settle_min,
         settle_max,
+        1
     ])
 
 
@@ -89,6 +93,7 @@ def test_constructor_call_state(web3, get_token_network_registry, secret_registr
         chain_id,
         TEST_SETTLE_TIMEOUT_MIN,
         TEST_SETTLE_TIMEOUT_MAX,
+        TEST_MAX_TOKENS,
     ])
     assert secret_registry_contract.address == registry.functions.secret_registry_address().call()
     assert chain_id == registry.functions.chain_id().call()
@@ -111,21 +116,41 @@ def test_create_erc20_token_network_call(
     with pytest.raises(ValidationError):
         token_network_registry_contract.functions.createERC20TokenNetwork(0).transact()
     with pytest.raises(ValidationError):
-        token_network_registry_contract.functions.createERC20TokenNetwork('').transact()
+        token_network_registry_contract.functions.createERC20TokenNetwork(
+            '',
+            MAX_ETH_CHANNEL_PARTICIPANT,
+            MAX_ETH_TOKEN_NETWORK,
+        ).transact()
     with pytest.raises(ValidationError):
-        token_network_registry_contract.functions.createERC20TokenNetwork(FAKE_ADDRESS).transact()
+        token_network_registry_contract.functions.createERC20TokenNetwork(
+            FAKE_ADDRESS,
+            MAX_ETH_CHANNEL_PARTICIPANT,
+            MAX_ETH_TOKEN_NETWORK,
+        ).transact()
 
     with pytest.raises(TransactionFailed):
-        token_network_registry_contract.functions.createERC20TokenNetwork(EMPTY_ADDRESS).transact()
+        token_network_registry_contract.functions.createERC20TokenNetwork(
+            EMPTY_ADDRESS,
+            MAX_ETH_CHANNEL_PARTICIPANT,
+            MAX_ETH_TOKEN_NETWORK
+        ).transact()
     with pytest.raises(TransactionFailed):
-        token_network_registry_contract.functions.createERC20TokenNetwork(A).transact()
+        token_network_registry_contract.functions.createERC20TokenNetwork(
+            A,
+            MAX_ETH_CHANNEL_PARTICIPANT,
+            MAX_ETH_TOKEN_NETWORK,
+        ).transact()
     with pytest.raises(TransactionFailed):
         token_network_registry_contract.functions.createERC20TokenNetwork(
             fake_token_contract,
+            MAX_ETH_CHANNEL_PARTICIPANT,
+            MAX_ETH_TOKEN_NETWORK,
         ).transact()
 
     token_network_registry_contract.functions.createERC20TokenNetwork(
         custom_token.address,
+        MAX_ETH_CHANNEL_PARTICIPANT,
+        MAX_ETH_TOKEN_NETWORK,
     ).transact({'from': contract_deployer_address})
 
 
@@ -169,6 +194,8 @@ def test_create_erc20_token_network_twice_fails(
         {'from': owner},
     ).createERC20TokenNetwork(
         custom_token.address,
+        MAX_ETH_CHANNEL_PARTICIPANT,
+        MAX_ETH_TOKEN_NETWORK,
     )
 
     with pytest.raises(TransactionFailed):
@@ -176,6 +203,8 @@ def test_create_erc20_token_network_twice_fails(
             {'from': owner},
         ).createERC20TokenNetwork(
             custom_token.address,
+            MAX_ETH_CHANNEL_PARTICIPANT,
+            MAX_ETH_TOKEN_NETWORK,
         )
 
 

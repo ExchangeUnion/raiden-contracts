@@ -20,6 +20,9 @@ from raiden_contracts.constants import (
     CONTRACT_TOKEN_NETWORK_REGISTRY,
     DEPLOY_SETTLE_TIMEOUT_MAX,
     DEPLOY_SETTLE_TIMEOUT_MIN,
+    DEPLOY_MAX_TOKENS,
+    MAX_ETH_CHANNEL_PARTICIPANT,
+    MAX_ETH_TOKEN_NETWORK
 )
 from raiden_contracts.contract_manager import (
     ContractManager,
@@ -392,6 +395,7 @@ def deploy_raiden_contracts(
         deployed_contracts['chain_id'],
         DEPLOY_SETTLE_TIMEOUT_MIN,
         DEPLOY_SETTLE_TIMEOUT_MAX,
+        DEPLOY_MAX_TOKENS,
     ]
     token_network_registry_receipt = deployer.deploy(
         CONTRACT_TOKEN_NETWORK_REGISTRY,
@@ -446,6 +450,8 @@ def register_token_network(
     token_network_registry = PrivateContract(token_network_registry)
     txhash = token_network_registry.functions.createERC20TokenNetwork(
         token_address,
+        MAX_ETH_CHANNEL_PARTICIPANT,
+        MAX_ETH_TOKEN_NETWORK,
     ).transact(
         {'gas_limit': gas_limit},
         private_key=private_key,

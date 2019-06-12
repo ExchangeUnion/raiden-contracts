@@ -6,6 +6,8 @@ from raiden_contracts.constants import (
     EVENT_TOKEN_NETWORK_CREATED,
     TEST_SETTLE_TIMEOUT_MIN,
     TEST_SETTLE_TIMEOUT_MAX,
+    MAX_ETH_CHANNEL_PARTICIPANT,
+    MAX_ETH_TOKEN_NETWORK,
 )
 from web3.contract import get_event_data
 
@@ -34,6 +36,8 @@ def register_token_network(
     def get(token_address):
         tx_hash = token_network_registry_contract.functions.createERC20TokenNetwork(
             token_address,
+            MAX_ETH_CHANNEL_PARTICIPANT,
+            MAX_ETH_TOKEN_NETWORK,
         ).transact({'from': owner})
         tx_receipt = web3.eth.getTransactionReceipt(tx_hash)
         event_abi = contracts_manager.get_event_abi(
@@ -109,4 +113,6 @@ def token_network_external(
         TEST_SETTLE_TIMEOUT_MIN,
         TEST_SETTLE_TIMEOUT_MAX,
         contract_deployer_address,
+        MAX_ETH_CHANNEL_PARTICIPANT,
+        MAX_ETH_CHANNEL_PARTICIPANT,
     ])

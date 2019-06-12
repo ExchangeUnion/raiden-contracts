@@ -26,6 +26,8 @@ from raiden_contracts.constants import (
     CONTRACT_TOKEN_NETWORK_REGISTRY,
     TEST_SETTLE_TIMEOUT_MAX,
     TEST_SETTLE_TIMEOUT_MIN,
+    MAX_ETH_CHANNEL_PARTICIPANT,
+    MAX_ETH_TOKEN_NETWORK,
 )
 from raiden_contracts.tests.utils import (
     deploy_contract,
@@ -147,6 +149,8 @@ class TokenNetworkStateMachine(GenericStateMachine):
 
         self.token_network_registry.functions.createERC20TokenNetwork(
             self.token.address,
+            MAX_ETH_CHANNEL_PARTICIPANT,
+            MAX_ETH_TOKEN_NETWORK,
         ).transact()
 
         token_network_address = self.token_network_registry.functions.token_to_token_networks(

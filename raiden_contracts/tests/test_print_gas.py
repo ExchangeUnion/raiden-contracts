@@ -5,6 +5,9 @@ from raiden_contracts.constants import (
     CONTRACT_SECRET_REGISTRY,
     TEST_SETTLE_TIMEOUT_MIN,
     TEST_SETTLE_TIMEOUT_MAX,
+    TEST_MAX_TOKENS,
+    MAX_ETH_CHANNEL_PARTICIPANT,
+    MAX_ETH_TOKEN_NETWORK,
 )
 from raiden_contracts.utils.utils import get_pending_transfers_tree, get_locked_amount
 from raiden_contracts.utils.merkle import get_merkle_root
@@ -25,6 +28,7 @@ def test_token_network_registry(
             int(web3.version.network),
             TEST_SETTLE_TIMEOUT_MIN,
             TEST_SETTLE_TIMEOUT_MAX,
+            TEST_MAX_TOKENS,
         ],
     )
     print_gas(txhash, CONTRACT_TOKEN_NETWORK_REGISTRY + ' DEPLOYMENT')
@@ -49,6 +53,8 @@ def test_token_network_deployment(
             TEST_SETTLE_TIMEOUT_MIN,
             TEST_SETTLE_TIMEOUT_MAX,
             deprecation_executor,
+            MAX_ETH_CHANNEL_PARTICIPANT,
+            MAX_ETH_TOKEN_NETWORK,
         ],
     )
     print_gas(txhash, CONTRACT_TOKEN_NETWORK + ' DEPLOYMENT')
@@ -63,6 +69,8 @@ def test_token_network_create(
 ):
     txn_hash = token_network_registry_contract.functions.createERC20TokenNetwork(
         custom_token.address,
+        MAX_ETH_CHANNEL_PARTICIPANT,
+        MAX_ETH_TOKEN_NETWORK,
     ).transact({'from': contract_deployer_address})
 
     print_gas(txn_hash, CONTRACT_TOKEN_NETWORK_REGISTRY + ' createERC20TokenNetwork')

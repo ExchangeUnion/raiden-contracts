@@ -7,6 +7,8 @@ from raiden_contracts.constants import (
     CONTRACT_TOKEN_NETWORK,
     CONTRACT_TOKEN_NETWORK_REGISTRY,
     EVENT_TOKEN_NETWORK_CREATED,
+    MAX_ETH_CHANNEL_PARTICIPANT,
+    MAX_ETH_TOKEN_NETWORK,
 )
 
 log = logging.getLogger(__name__)
@@ -87,6 +89,8 @@ def standard_token_network_contract(
     """Return instance of a deployed TokenNetwork for HumanStandardToken."""
     txid = token_network_registry_contract.functions.createERC20TokenNetwork(
         standard_token_contract.address,
+        MAX_ETH_CHANNEL_PARTICIPANT,
+        MAX_ETH_TOKEN_NETWORK,
     ).transact({'from': contract_deployer_address})
     tx_receipt = wait_for_transaction(txid)
     assert len(tx_receipt['logs']) == 1
