@@ -72,6 +72,7 @@ def common_options(func: Callable) -> Callable:
         default=None,
         help="Contracts version to verify. Current version will be used by default.",
     )
+    @click.option("--password", required=True, help="Path to a private key password.")
     @functools.wraps(func)
     def wrapper(*args: List, **kwargs: Dict) -> Any:
         return func(*args, **kwargs)
@@ -88,6 +89,7 @@ def setup_ctx(
     gas_price: int,
     gas_limit: int,
     contracts_version: Optional[str] = None,
+    password: Optional[str] = None,
 ) -> None:
     """Set up deployment context according to common options (shared among all
     subcommands).
@@ -102,7 +104,10 @@ def setup_ctx(
     web3 = Web3(HTTPProvider(rpc_provider, request_kwargs={"timeout": 60}))
     web3.middleware_stack.inject(geth_poa_middleware, layer=0)
     print("Web3 provider is", web3.providers[0])
-    private_key_string = get_private_key(Path(private_key))
+    if password:
+        private_key_string = get_private_key(Path(private_key), Path(password))
+    else:
+        private_key_string = get_private_key(Path(private_key))
     if not private_key_string:
         raise RuntimeError("Could not access the private key.")
     owner = private_key_to_address(private_key_string)
@@ -173,13 +178,16 @@ def raiden(
     contracts_version: Optional[str],
     max_token_networks: Optional[int],
     secret_registry_from_deployment_file: Optional[str],
+    password: Optional[str],
 ) -> None:
     check_version_dependent_parameters(contracts_version, max_token_networks)
     secret_registry_from_deployment_path: Optional[Path] = None
     if secret_registry_from_deployment_file:
         secret_registry_from_deployment_path = Path(secret_registry_from_deployment_file)
 
-    setup_ctx(ctx, private_key, rpc_provider, wait, gas_price, gas_limit, contracts_version)
+    setup_ctx(
+        ctx, private_key, rpc_provider, wait, gas_price, gas_limit, contracts_version, password
+    )
     deployer = ctx.obj["deployer"]
     deployed_contracts_info = deployer.deploy_raiden_contracts(
         max_num_of_token_networks=max_token_networks,
@@ -285,8 +293,11 @@ def services(
     service_deposit_min_price: int,
     service_registration_duration: int,
     token_network_registry_address: HexAddress,
+    password: Optional[str],
 ) -> None:
-    setup_ctx(ctx, private_key, rpc_provider, wait, gas_price, gas_limit, contracts_version)
+    setup_ctx(
+        ctx, private_key, rpc_provider, wait, gas_price, gas_limit, contracts_version, password
+    )
     deployer: ContractDeployer = ctx.obj["deployer"]
 
     deployed_contracts_info = deployer.deploy_service_contracts(
@@ -348,8 +359,11 @@ def token(
     token_name: str,
     token_decimals: int,
     token_symbol: str,
+    password: Optional[str],
 ) -> None:
-    setup_ctx(ctx, private_key, rpc_provider, wait, gas_price, gas_limit, contracts_version)
+    setup_ctx(
+        ctx, private_key, rpc_provider, wait, gas_price, gas_limit, contracts_version, password
+    )
     deployer = ctx.obj["deployer"]
     token_supply *= 10 ** token_decimals
     deployed_token = deployer.deploy_token_contract(
@@ -406,9 +420,12 @@ def register(
     channel_participant_deposit_limit: Optional[int],
     token_network_deposit_limit: Optional[int],
     registry_address: Optional[HexAddress],
+    password: Optional[str],
 ) -> None:
     assert registry_address is None  # No longer used option
-    setup_ctx(ctx, private_key, rpc_provider, wait, gas_price, gas_limit, contracts_version)
+    setup_ctx(
+        ctx, private_key, rpc_provider, wait, gas_price, gas_limit, contracts_version, password
+    )
     token_type = ctx.obj["token_type"]
     deployer = ctx.obj["deployer"]
 
